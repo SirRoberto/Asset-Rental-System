@@ -33,4 +33,5 @@ interface InventoryItemUseCase {
     fun createInventoryItem(command: CreateInventoryItemCommand): InventoryItem
     fun getInventoryItem(id: UUID): InventoryItem
     fun changeItemStatus(id: UUID, newStatus: ItemStatus)
+    fun uploadItemPhoto(id: UUID, originalFileName: String, content: ByteArray, contentType: String): InventoryItem
 }

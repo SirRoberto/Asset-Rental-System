@@ -4,6 +4,7 @@ import com.rental.asset.application.port.`in`.AssetUseCase
 import com.rental.asset.application.port.`in`.CreateAssetCommand
 import com.rental.asset.application.port.`in`.CreateInventoryItemCommand
 import com.rental.asset.application.port.`in`.InventoryItemUseCase
+import com.rental.asset.application.port.out.FileStoragePort
 import com.rental.asset.application.port.out.QrCodeGeneratorPort
 import com.rental.asset.domain.exception.AssetNotFoundException
 import com.rental.asset.domain.exception.InventoryItemNotFoundException
@@ -21,7 +22,8 @@ import java.util.UUID
 class AssetService(
     private val assetRepository: AssetRepository,
     private val inventoryItemRepository: InventoryItemRepository,
-    private val qrCodeGeneratorPort: QrCodeGeneratorPort
+    private val qrCodeGeneratorPort: QrCodeGeneratorPort,
+    private val fileStoragePort: FileStoragePort
 ) : AssetUseCase, InventoryItemUseCase {
 
     override fun createAsset(command: CreateAssetCommand): Asset {
@@ -65,5 +67,18 @@ class AssetService(
         val item = inventoryItemRepository.findById(id) ?: throw InventoryItemNotFoundException(id.toString())
         item.changeStatus(newStatus)
         inventoryItemRepository.save(item)
+    }
+
+    override fun uploadItemPhoto(id: UUID, originalFileName: String, content: ByteArray, contentType: String): InventoryItem {
+        val item = inventoryItemRepository.findById(id) ?: throw InventoryItemNotFoundException(id.toString())
+
+        // UUID-prefix to avoid overwriting files across items
+        val extension = originalFileName.substringAfterLast('.', "jpg")
+        val uniquePath = "items/${item.id}/${UUID.randomUUID()}-${originalFileName.substringBeforeLast('.')}.$extension"
+
+        val photoUrl = fileStoragePort.uploadFile(uniquePath, content, contentType)
+
+        val updatedItem = item.copy(photoUrl = photoUrl)
+        return inventoryItemRepository.save(updatedItem)
     }
 }

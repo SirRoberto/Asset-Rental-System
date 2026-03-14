@@ -24,6 +24,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.flywaydb:flyway-core")
+    implementation("software.amazon.awssdk:s3:2.25.0")
     runtimeOnly("org.postgresql:postgresql")
     
     // Testing
