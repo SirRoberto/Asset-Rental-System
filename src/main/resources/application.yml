@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: asset-rental
+  datasource:
+    url: jdbc:postgresql://localhost:5432/asset_rental_db
+    username: asset_user
+    password: asset_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # Flyway zarządza schematem, JPA tylko waliduje
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/asset_rental_db
+    user: asset_user
+    password: asset_password
+    baseline-on-migrate: true
+
+server:
+  port: 8080
